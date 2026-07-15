@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход — ryaninsky admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700&family=Manrope:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+<div class="login-page">
+  <div class="login-box">
+    <div class="login-title">ryaninsky<span style="color:var(--accent)">.</span>admin</div>
+    {% if error %}<div class="login-error">{{ error }}</div>{% endif %}
+    <form method="POST" style="display:flex;flex-direction:column;gap:0.75rem;">
+      <div class="form-field">
+        <label>Пароль</label>
+        <input type="password" name="password" autofocus required>
+      </div>
+      <button type="submit" class="submit-btn" style="width:100%;margin-top:0.25rem;">Войти →</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}ryaninsky{% endblock %}
+{% block content %}
+
+{% set cat_icons = {'film':'🎬','series':'📺','anime':'🎌','album':'🎵','game':'🎮','clip':'🎥','book':'📖'} %}
+{% set card_shape = {'film':'poster','series':'poster','anime':'poster','game':'poster','book':'poster','album':'square','clip':'wide'} %}
+
+{% for cat, label in category_labels.items() %}
+{% set items = sections.get(cat, []) %}
+{% set total = totals.get(cat, 0) %}
+{% if items %}
+<section class="home-section">
+  <div class="section-header">
+    <span class="section-title">{{ label }}</span>
+    <a href="/category/{{ cat }}" class="section-link">Все →</a>
+  </div>
+  <div class="scroll-row">
+    {% for entry in items %}
+    {% set w = entry.work %}
+    <div class="card {{ card_shape.get(w.category,'poster') }}" onclick="location.href='/work/{{ w.id }}'">
+      <div class="card-cover">
+        <div class="card-cover-inner">
+          {% if w.cover %}
+            <img src="/uploads/{{ w.cover }}" alt="{{ w.title }}" loading="lazy">
+          {% else %}
+            <div class="card-no-cover">{{ cat_icons.get(w.category,'📄') }}</div>
+          {% endif %}
+        </div>
+        <button class="heart-btn {% if entry.user_hearted %}hearted{% endif %}" data-work-id="{{ w.id }}">
+          {% if entry.user_hearted %}❤️{% else %}🤍{% endif %}
+        </button>
+      </div>
+      <div class="card-info">
+        <div class="card-title">{{ w.title }}</div>
+        <div class="card-meta">
+          {% if w.rating %}<span class="card-rating">{{ w.rating }}</span>{% endif %}
+          {% if w.release_year %}<span>{{ w.release_year }}</span>{% endif %}
+          <span class="card-hearts">🤍 <span class="hearts-val" data-work-id="{{ w.id }}">{{ entry.heart_count }}</span></span>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    {% if total > home_limit %}
+    <div class="card card-more" onclick="location.href='/category/{{ cat }}'">
+      <div class="card-cover card-more-cover {{ card_shape.get(cat,'poster') }}">
+        <div class="more-count">+{{ total - home_limit }}</div>
+        <div class="more-label">ещё</div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+{% endfor %}
+
+{% if not sections or sections.values()|list|length == 0 %}
+<div class="empty-state">
+  <div class="empty-icon">📭</div>
+  <p>Пока ничего не добавлено</p>
+</div>
+{% endif %}
+
+{% endblock %}

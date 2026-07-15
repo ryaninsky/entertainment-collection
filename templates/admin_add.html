@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Добавить произведение — ryaninsky{% endblock %}
+{% block content %}
+
+<div class="admin-page">
+  <a href="/admin" class="back-link">← Назад</a>
+  <h1 class="admin-title">Добавить произведение</h1>
+
+  <form method="POST" enctype="multipart/form-data" class="add-form">
+
+    <div class="form-row">
+      <div class="form-field" style="flex:2">
+        <label>Название *</label>
+        <input type="text" name="title" required placeholder="Название произведения">
+      </div>
+      <div class="form-field">
+        <label>Категория *</label>
+        <select name="category" required id="categorySelect">
+          {% for key, label in category_labels.items() %}
+          <option value="{{ key }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label>Год выхода</label>
+        <input type="number" name="release_year" min="1800" max="2100" placeholder="2024">
+      </div>
+      <div class="form-field">
+        <label>Дата просмотра</label>
+        <input type="date" name="viewed_date">
+      </div>
+      <div class="form-field">
+        <label>Оценка (0–10)</label>
+        <input type="number" name="rating" min="1" max="10" step="1" placeholder="8">
+      </div>
+    </div>
+
+    <div class="form-field" style="margin-bottom:0.75rem;">
+      <label>Обложка</label>
+      <input type="file" name="cover" accept="image/*">
+    </div>
+
+    <div class="form-field" style="margin-bottom:0.75rem;" id="authorField">
+      <label>Автор <span style="color:var(--muted);font-size:0.72rem;">(для книг)</span></label>
+      <input type="text" name="author" placeholder="Имя автора">
+    </div>
+
+    <div class="form-field" style="margin-bottom:0.75rem;">
+      <label>Описание</label>
+      <textarea name="description" placeholder="Краткое описание произведения..." style="min-height:80px;"></textarea>
+    </div>
+
+    <div class="form-field" style="margin-bottom:1rem;">
+      <label>Мой отзыв</label>
+      <textarea name="review" placeholder="Личные впечатления..." style="min-height:100px;"></textarea>
+    </div>
+
+    <!-- Highlights (for series, albums, books) -->
+    <div class="highlights-group" id="highlightsSection">
+      <div class="admin-section-title" style="margin-bottom:0.75rem;" id="hlSectionTitle">Лучшие серии / треки / главы</div>
+      <div id="highlightsGroup">
+        <div class="highlight-row">
+          <input type="text" name="highlight_ep[]" placeholder="Серия / трек / глава" style="max-width:160px">
+          <input type="text" name="highlight_title[]" placeholder="Название" style="flex:2">
+          <input type="text" name="highlight_note[]" placeholder="Заметка">
+          <button type="button" class="rm-highlight" onclick="this.closest('.highlight-row').remove()">✕</button>
+        </div>
+      </div>
+      <button type="button" id="addHighlight" class="btn-small" style="margin-top:0.5rem;">+ Добавить строку</button>
+    </div>
+
+    <div style="margin-top:1.5rem;display:flex;gap:1rem;">
+      <button type="submit" class="submit-btn">Сохранить →</button>
+      <a href="/admin" class="btn-small" style="padding:0.6rem 1rem;display:inline-flex;align-items:center;">Отмена</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
+{% block extra_js %}
+<script>
+// Show/hide highlights based on category
+const catSel = document.getElementById('categorySelect');
+const hlSection = document.getElementById('highlightsSection');
+const hlLabels = {series:'Лучшие серии', album:'Лучшие треки', book:'Особо выделенные главы'};
+function updateHighlights() {
+  const showFor = ['series', 'album', 'book'];
+  const show = showFor.includes(catSel.value);
+  hlSection.style.display = show ? 'block' : 'none';
+  if (show && hlLabels[catSel.value]) {
+    document.getElementById('hlSectionTitle').textContent = hlLabels[catSel.value];
+  }
+}
+catSel.addEventListener('change', updateHighlights);
+catSel.addEventListener('change', updateAuthor);
+function updateAuthor() {
+  const af = document.getElementById('authorField');
+  if (af) af.style.display = catSel.value === 'book' ? 'flex' : 'none';
+}
+updateHighlights();
+updateAuthor();
+</script>
+{% endblock %}

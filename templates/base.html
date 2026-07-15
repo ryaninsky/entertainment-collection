@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ryaninsky{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;700&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/main.css">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="logo">ryaninsky<span class="logo-dot">.</span></a>
+    <nav class="main-nav">
+      <a href="/" {% if request.path == '/' %}class="active"{% endif %}>Главная</a>
+      <a href="/category/film" {% if request.path == '/category/film' %}class="active"{% endif %}>Фильмы</a>
+      <a href="/category/series" {% if request.path == '/category/series' %}class="active"{% endif %}>Сериалы</a>
+      <a href="/category/anime" {% if request.path == '/category/anime' %}class="active"{% endif %}>Аниме</a>
+      <a href="/category/album" {% if request.path == '/category/album' %}class="active"{% endif %}>Музыка</a>
+      <a href="/category/game" {% if request.path == '/category/game' %}class="active"{% endif %}>Игры</a>
+      <a href="/category/clip" {% if request.path == '/category/clip' %}class="active"{% endif %}>Клипы</a>
+      <a href="/category/book" {% if request.path == '/category/book' %}class="active"{% endif %}>Книги</a>
+      <a href="/suggest" {% if request.path == '/suggest' %}class="active"{% endif %}>Предложения</a>
+    </nav>
+    <button class="burger" id="burger" aria-label="Меню">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <div class="mobile-nav" id="mobileNav">
+    <a href="/">Главная</a>
+    <a href="/category/film">Фильмы</a>
+    <a href="/category/series">Сериалы</a>
+    <a href="/category/anime">Аниме</a>
+    <a href="/category/album">Музыка</a>
+    <a href="/category/game">Игры</a>
+    <a href="/category/clip">Клипы</a>
+    <a href="/category/book">Книги</a>
+    <a href="/suggest">Предложения</a>
+  </div>
+
+  <main class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-right">
+        <span class="footer-name">© Егор Рябинский</span>
+        <a href="mailto:ryabinsky.egor@gmail.com" class="footer-email">ryabinsky.egor@gmail.com</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/static/js/main.js"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

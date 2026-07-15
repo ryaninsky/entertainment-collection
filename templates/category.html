@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{{ label }} — ryaninsky{% endblock %}
+{% block content %}
+
+{% set cat_icons = {'film':'🎬','series':'📺','anime':'🎌','album':'🎵','game':'🎮','clip':'🎥','book':'📖'} %}
+{% set card_shape = {'film':'poster','series':'poster','anime':'poster','game':'poster','book':'poster','album':'square','clip':'wide'} %}
+
+<div class="category-page">
+  <a href="/" class="back-link">← На главную</a>
+
+  <div class="sort-wrap">
+    <div class="sort-bar">
+      <a href="?sort=year"><button class="sort-btn {% if sort=='year' %}active{% endif %}">Дата выхода</button></a>
+      <a href="?sort=new"><button class="sort-btn {% if sort=='new' %}active{% endif %}">Новизна</button></a>
+      <a href="?sort=rate"><button class="sort-btn {% if sort=='rate' %}active{% endif %}">Оценка</button></a>
+    </div>
+  </div>
+
+  {% if works %}
+  <div class="works-grid {% if cat=='clip' %}wide-grid{% endif %}">
+    {% for entry in works %}
+    {% set w = entry.work %}
+    <div class="card {{ card_shape.get(w.category,'poster') }}" onclick="location.href='/work/{{ w.id }}'">
+      <div class="card-cover">
+        <div class="card-cover-inner">
+          {% if w.cover %}
+            <img src="/uploads/{{ w.cover }}" alt="{{ w.title }}" loading="lazy">
+          {% else %}
+            <div class="card-no-cover">{{ cat_icons.get(w.category,'📄') }}</div>
+          {% endif %}
+        </div>
+        <button class="heart-btn {% if entry.user_hearted %}hearted{% endif %}" data-work-id="{{ w.id }}">
+          {% if entry.user_hearted %}❤️{% else %}🤍{% endif %}
+        </button>
+      </div>
+      <div class="card-info">
+        <div class="card-title">{{ w.title }}</div>
+        <div class="card-meta">
+          {% if w.rating %}<span class="card-rating">{{ w.rating }}/10</span>{% endif %}
+          {% if w.release_year %}<span>{{ w.release_year }}</span>{% endif %}
+          <span class="card-hearts">🤍 <span class="hearts-val" data-work-id="{{ w.id }}">{{ entry.heart_count }}</span></span>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">{{ cat_icons.get(cat,'📄') }}</div>
+    <p>Здесь пока пусто</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

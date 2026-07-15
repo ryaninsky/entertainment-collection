@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Предложения — ryaninsky{% endblock %}
+{% block content %}
+
+{% set status_labels = {'considering': 'Рассматривается', 'in_progress': 'В процессе', 'will_watch': 'Посмотрю', 'maybe': 'Когда-нибудь', 'unlikely': 'Вряд ли'} %}
+
+<div class="suggest-page">
+  <div class="suggest-form">
+    <div class="form-title">Предложи что-нибудь</div>
+    <form id="suggestForm">
+      <div class="form-row">
+        <div class="form-field" style="flex:2">
+          <input type="text" name="title_field" placeholder="Название..." required>
+        </div>
+        <div class="form-field" style="flex:1">
+          <select name="category_field">
+            <option value="">Категория</option>
+            <option value="Фильм">Фильм</option>
+            <option value="Сериал">Сериал</option>
+            <option value="Аниме">Аниме</option>
+            <option value="Музыка">Музыка</option>
+            <option value="Игра">Игра</option>
+            <option value="Клип">Клип</option>
+            <option value="Книга">Книга</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <textarea name="note_field" placeholder="Почему стоит?" rows="2"></textarea>
+      </div>
+      <button type="submit" class="submit-btn">Предложить →</button>
+    </form>
+  </div>
+
+  {% if suggestions %}
+  <div class="suggestions-list" id="suggestionsList">
+    {% for s in suggestions %}
+    <div class="suggestion-item">
+      <div>
+        <div class="suggestion-title">{{ s.title }}</div>
+        {% if s.category %}<div class="suggestion-cat">{{ s.category }}</div>{% endif %}
+        {% if s.note %}<div class="suggestion-note">{{ s.note }}</div>{% endif %}
+        <div class="suggestion-date">{{ s.created_at.strftime('%d.%m.%Y') }}</div>
+      </div>
+      <span class="suggestion-status status-{{ s.status }}">{{ status_labels.get(s.status, 'Рассматривается') }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">💌</div>
+    <p>Пока никто ничего не предложил — будь первым!</p>
+  </div>
+  <div class="suggestions-list" id="suggestionsList"></div>
+  {% endif %}
+</div>
+
+{% endblock %}

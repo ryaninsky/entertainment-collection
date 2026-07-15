@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Админ — ryaninsky{% endblock %}
+{% block content %}
+
+{% set cat_icons = {'film': '🎬', 'series': '📺', 'album': '🎵', 'game': '🎮', 'clip': '🎥', 'book': '📖'} %}
+{% set status_labels = {'pending': 'Ожидает', 'will_watch': 'Посмотрю', 'maybe': 'Когда-нибудь', 'unlikely': 'Вряд ли'} %}
+
+<div class="admin-page">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;">
+    <h1 class="admin-title" style="margin-bottom:0;">Панель администратора</h1>
+    <a href="/admin/logout" class="btn-small">Выйти</a>
+  </div>
+
+  <!-- Works -->
+  <div class="admin-section">
+    <div class="admin-section-title">Произведения</div>
+    <a href="/admin/add" class="btn-add">+ Добавить</a>
+    {% if works %}
+    <div style="overflow-x:auto;">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Обложка</th>
+            <th>Название</th>
+            <th>Категория</th>
+            <th>Год</th>
+            <th>Оценка</th>
+            <th>Сердечки</th>
+            <th>Добавлено</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for w in works %}
+          <tr>
+            <td>
+              {% if w.cover %}
+                <img src="/uploads/{{ w.cover }}" class="admin-cover-thumb" alt="">
+              {% else %}
+                <span style="font-size:1.4rem;">{{ cat_icons.get(w.category,'📄') }}</span>
+              {% endif %}
+            </td>
+            <td><a href="/work/{{ w.id }}" style="color:var(--text);">{{ w.title }}</a></td>
+            <td style="color:var(--muted);font-size:0.8rem;">{{ category_labels.get(w.category, w.category) }}</td>
+            <td style="color:var(--muted);">{{ w.release_year or '—' }}</td>
+            <td style="color:var(--accent);font-weight:600;">{{ w.rating or '—' }}</td>
+            <td style="color:var(--muted);">{{ w.hearts | length }}</td>
+            <td style="color:var(--muted);font-size:0.78rem;">{{ w.created_at.strftime('%d.%m.%Y') }}</td>
+            <td>
+              <form method="POST" action="/admin/delete/{{ w.id }}" onsubmit="return confirm('Удалить «{{ w.title }}»?')">
+                <button type="submit" class="btn-small danger">Удалить</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="color:var(--muted);font-size:0.85rem;padding:1rem 0;">Пока ничего нет. <a href="/admin/add" style="color:var(--accent);">Добавьте первое произведение</a>.</div>
+    {% endif %}
+  </div>
+
+  <!-- Suggestions -->
+  <div class="admin-section">
+    <div class="admin-section-title">Предложения предложения</div>
+    {% if suggestions %}
+    <div style="overflow-x:auto;">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Название</th>
+            <th>Категория</th>
+            <th>Заметка</th>
+            <th>Дата</th>
+            <th>Статус</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in suggestions %}
+          <tr>
+            <td style="font-weight:600;">{{ s.title }}</td>
+            <td style="color:var(--muted);font-size:0.8rem;">{{ s.category or '—' }}</td>
+            <td style="color:var(--muted);font-size:0.82rem;max-width:260px;">{{ s.note or '—' }}</td>
+            <td style="color:var(--muted);font-size:0.78rem;">{{ s.created_at.strftime('%d.%m.%Y') }}</td>
+            <td>
+              <select class="status-select" data-sid="{{ s.id }}">
+                {% for val, label in [('considering','Рассматривается'),('in_progress','В процессе'),('will_watch','Посмотрю'),('maybe','Когда-нибудь'),('unlikely','Вряд ли')] %}
+                <option value="{{ val }}" {% if s.status == val %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="color:var(--muted);font-size:0.85rem;padding:1rem 0;">Предложений пока нет.</div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

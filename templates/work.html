@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}{{ work.title }} — ryaninsky{% endblock %}
+{% block content %}
+
+{% set cat_icons = {'film':'🎬','series':'📺','anime':'🎌','album':'🎵','game':'🎮','clip':'🎥','book':'📖'} %}
+{% set cat_labels = {'film':'Фильм','series':'Сериал','anime':'Аниме','album':'Альбом','game':'Игра','clip':'Клип','book':'Книга'} %}
+{% set cover_shape = {'film':'poster','series':'poster','anime':'poster','game':'poster','book':'poster','album':'square','clip':'wide'} %}
+{% set highlight_label = {'series':'Лучшие серии','anime':'Лучшие серии','album':'Лучшие треки','book':'Особо выделенные главы'} %}
+
+<div class="work-page">
+  <a href="/category/{{ work.category }}" class="back-link">← {{ category_labels.get(work.category,'Назад') }}</a>
+
+  <div class="work-hero">
+    <div class="work-cover {{ cover_shape.get(work.category,'poster') }}">
+      {% if work.cover %}
+        <img src="/uploads/{{ work.cover }}" alt="{{ work.title }}">
+      {% else %}
+        <div class="work-cover-empty">{{ cat_icons.get(work.category,'📄') }}</div>
+      {% endif %}
+    </div>
+
+    <div class="work-meta">
+      <span class="work-category">{{ cat_labels.get(work.category, work.category) }}</span>
+      <h1 class="work-title">{{ work.title }}</h1>
+      {% if work.category == 'book' and work.author %}
+        <div class="work-author">{{ work.author }}</div>
+      {% endif %}
+
+      <div class="work-stats">
+        {% if work.release_year %}
+        <div class="stat-item">
+          <span class="stat-label">Год</span>
+          <span class="stat-value">{{ work.release_year }}</span>
+        </div>
+        {% endif %}
+        {% if work.rating %}
+        <div class="stat-item">
+          <span class="stat-label">Оценка</span>
+          <span class="stat-value accent">{{ work.rating }}/10</span>
+        </div>
+        {% endif %}
+        {% if work.viewed_date %}
+        <div class="stat-item">
+          <span class="stat-label">Ознакомился</span>
+          <span class="stat-value">{{ work.viewed_date.strftime('%d.%m.%Y') }}</span>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="work-hearts-block">
+        <button class="work-heart-btn {% if user_hearted %}hearted{% endif %}"
+                id="workHeartBtn" data-work-id="{{ work.id }}">
+          {% if user_hearted %}❤️{% else %}🤍{% endif %}
+        </button>
+        <span class="hearts-count"><span id="workHeartsCount">{{ heart_count }}</span> раз попало в сердечко</span>
+      </div>
+
+      {% if work.description %}
+      <div class="work-review">{{ work.description }}</div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if work.review %}
+  <div style="margin-bottom:1.5rem;">
+    <div class="highlights-title">Мой отзыв</div>
+    <div class="work-review">{{ work.review }}</div>
+  </div>
+  {% endif %}
+  {# If neither description nor review — no empty blocks shown #}
+
+  {% if highlights and work.category in ['series','anime','album','book'] %}
+  <div class="highlights-section">
+    <div class="highlights-title">{{ highlight_label.get(work.category,'Избранное') }}</div>
+    {% for hl in highlights %}
+    <div class="highlight-item">
+      {% if hl.episode_number %}<div class="highlight-ep">{{ hl.episode_number }}</div>{% endif %}
+      <div class="highlight-name">{{ hl.title }}</div>
+      {% if hl.note %}<div class="highlight-note">{{ hl.note }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
